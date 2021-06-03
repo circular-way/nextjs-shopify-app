@@ -13,6 +13,10 @@ export const ApiVersion = {
   Unversioned: "unversioned",
 };
 
+const scopes = process.env.SCOPES
+  ? process.env.SCOPES.split(",")
+  : ["read_products", "write_products"];
+
 const shopifyAuthOptions = {
   // your shopify app api key
   apiKey: process.env.SHOPIFY_API_KEY,
@@ -25,7 +29,7 @@ const shopifyAuthOptions = {
   // defaults to ""
   prefix: "/api/shopify",
   // scopes to request on the merchants store
-  scopes: ["read_products", "write_products"],
+  scopes,
   // set access mode, default is "online"
   accessMode: "online" as const,
   // callback for when auth is completed

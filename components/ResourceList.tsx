@@ -1,16 +1,16 @@
-import React from "react"
-import gql from 'graphql-tag';
-import { Query } from 'react-apollo';
+import React from "react";
+import gql from "graphql-tag";
+import { Query } from "react-apollo";
 import {
   Card,
   ResourceList,
   Stack,
   TextStyle,
   Thumbnail,
-} from '@shopify/polaris';
-import store from 'store-js';
-import { Redirect } from '@shopify/app-bridge/actions';
-import { Context } from '@shopify/app-bridge-react';
+} from "@shopify/polaris";
+import store from "store-js";
+import { Redirect } from "@shopify/app-bridge/actions";
+import { Context } from "@shopify/app-bridge-react";
 
 const GET_PRODUCTS_BY_ID = gql`
   query getProducts($ids: [ID!]!) {
@@ -48,37 +48,39 @@ class ResourceListWithProducts extends React.Component {
     const app = this.context;
     const redirectToProduct = () => {
       const redirect = Redirect.create(app);
-      redirect.dispatch(
-        Redirect.Action.APP,
-        '/edit-products',
-      );
+      redirect.dispatch(Redirect.Action.APP, "/edit-products");
     };
 
     const twoWeeksFromNow = new Date(Date.now() + 12096e5).toDateString();
     return (
-      <Query query={GET_PRODUCTS_BY_ID} variables={{ ids: store.get('ids') }}>
-        {({ data, loading, error }) => {
-          if (loading) { return <div>Loading…</div>; }
-          if (error) { return <div>{error.message}</div>; }
+      <Query query={GET_PRODUCTS_BY_ID} variables={{ ids: store.get("ids") }}>
+        {(result) => {
+          const { data, loading, error } = result;
+          if (loading) {
+            return <div>Loading…</div>;
+          }
+          if (error) {
+            return <div>{error.message}</div>;
+          }
           console.log(data);
           return (
             <Card>
               <ResourceList
                 showHeader
-                resourceName={{ singular: 'Product', plural: 'Products' }}
+                resourceName={{ singular: "Product", plural: "Products" }}
                 items={data.nodes}
-                renderItem={(item) => {
+                renderItem={(item: any) => {
                   const media = (
                     <Thumbnail
                       source={
                         item.images.edges[0]
                           ? item.images.edges[0].node.originalSrc
-                          : ''
+                          : ""
                       }
                       alt={
                         item.images.edges[0]
                           ? item.images.edges[0].node.altText
-                          : ''
+                          : ""
                       }
                     />
                   );
@@ -89,10 +91,9 @@ class ResourceListWithProducts extends React.Component {
                       media={media}
                       accessibilityLabel={`View details for ${item.title}`}
                       onClick={() => {
-                        store.set('item', item);
+                        store.set("item", item);
                         redirectToProduct();
-                      }
-                      }
+                      }}
                     >
                       <Stack>
                         <Stack.Item fill>

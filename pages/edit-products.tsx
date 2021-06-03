@@ -30,8 +30,17 @@ const UPDATE_PRICE = gql`
   }
 `;
 
-class EditProduct extends React.Component {
-  state = {
+type State = {
+  name: string;
+  discount: string;
+  price: string;
+  variantId: string;
+  showToast: boolean;
+};
+
+class EditProduct extends React.Component<{}, State> {
+  state: State = {
+    name: "",
     discount: "",
     price: "",
     variantId: "",
@@ -46,7 +55,8 @@ class EditProduct extends React.Component {
     const { name, price, discount, variantId } = this.state;
     return (
       <Mutation mutation={UPDATE_PRICE}>
-        {(handleSubmit, { error, data }) => {
+        {(handleSubmit, result) => {
+          const { error, data } = result;
           const showError = error && (
             <Banner status="critical">{error.message}</Banner>
           );
@@ -64,7 +74,7 @@ class EditProduct extends React.Component {
                   <Layout.Section>{showError}</Layout.Section>
                   <Layout.Section>
                     <DisplayText size="large">{name}</DisplayText>
-                    <Form>
+                    <Form onSubmit={() => {}}>
                       <Card sectioned>
                         <FormLayout>
                           <FormLayout.Group>
@@ -73,34 +83,32 @@ class EditProduct extends React.Component {
                               value={price}
                               disabled
                               label="Original price"
-                              type="price"
+                              type="currency"
                             />
                             <TextField
                               prefix="$"
                               value={discount}
                               onChange={this.handleChange("discount")}
                               label="Discounted price"
-                              type="discount"
+                              type="currency"
                             />
                           </FormLayout.Group>
                           <p>This sale price will expire in two weeks</p>
                         </FormLayout>
                       </Card>
                       <PageActions
-                        primaryAction={[
-                          {
-                            content: "Save",
-                            onAction: () => {
-                              const productVariableInput = {
-                                id: variantId,
-                                price: discount,
-                              };
-                              handleSubmit({
-                                variables: { input: productVariableInput },
-                              });
-                            },
+                        primaryAction={{
+                          content: "Save",
+                          onAction: () => {
+                            const productVariableInput = {
+                              id: variantId,
+                              price: discount,
+                            };
+                            handleSubmit({
+                              variables: { input: productVariableInput },
+                            });
                           },
-                        ]}
+                        }}
                         secondaryActions={[
                           {
                             content: "Remove discount",
@@ -118,8 +126,9 @@ class EditProduct extends React.Component {
     );
   }
 
-  handleChange = (field) => {
-    return (value) => this.setState({ [field]: value });
+  handleChange = <F extends keyof State>(field: F) => {
+    return (value: State[F]) =>
+      this.setState({ [field]: value } as Pick<State, F>);
   };
 
   itemToBeConsumed = () => {

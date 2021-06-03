@@ -12,8 +12,12 @@ import {
   TextStyle,
 } from "@shopify/polaris";
 
-class AnnotatedLayout extends React.Component {
-  state = {
+type State = {
+  discount: string;
+  enabled: boolean;
+};
+class AnnotatedLayout extends React.Component<{}, State> {
+  state: State = {
     discount: "10%",
     enabled: false,
   };
@@ -37,7 +41,7 @@ class AnnotatedLayout extends React.Component {
                     value={discount}
                     onChange={this.handleChange("discount")}
                     label="Discount percentage"
-                    type="discount"
+                    type="text"
                   />
                   <Stack distribution="trailing">
                     <Button primary submit>
@@ -75,8 +79,9 @@ class AnnotatedLayout extends React.Component {
     console.log("submission", this.state);
   };
 
-  handleChange = (field) => {
-    return (value) => this.setState({ [field]: value });
+  handleChange = <F extends keyof State>(field: F) => {
+    return (value: State[F]) =>
+      this.setState({ [field]: value } as Pick<State, F>);
   };
 
   handleToggle = () => {

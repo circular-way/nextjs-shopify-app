@@ -27,7 +27,7 @@ const shopifyAuthOptions = {
   // scopes to request on the merchants store
   scopes: ["read_products", "write_products"],
   // set access mode, default is "online"
-  accessMode: "online",
+  accessMode: "online" as const,
   // callback for when auth is completed
   async afterAuth({
     shopOrigin,

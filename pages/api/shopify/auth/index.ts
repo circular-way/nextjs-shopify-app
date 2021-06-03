@@ -1,11 +1,16 @@
+import { NextApiRequest, NextApiResponse } from "next";
 import {
   hasCookieAccess,
   shouldPerformInlineOAuth,
   grantedStorageAccess,
 } from "@bluebeela/nextjs-shopify-auth";
+
 import shopify from "../../../../lib/shopify";
 
-export default async function shopifyAuthIndex(req, res) {
+export default async function shopifyAuthIndex(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   const {
     enableCookiesRedirect,
     oAuthStart,
